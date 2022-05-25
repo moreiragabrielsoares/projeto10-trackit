@@ -88,7 +88,7 @@ const FormInput = styled.input`
 const FormButton = styled.button`
     width: 303px;
     height: 45px;
-    background: #52B6FF;
+    background-color: #52B6FF;
     border-radius: 5px;
     border: 1px solid #52B6FF;
     font-family: 'Lexend Deca';

@@ -47,5 +47,9 @@ table {
 	border-spacing: 0;
 }
 
+* {
+	box-sizing: border-box;
+}
+
 /* font-family: 'Lexend Deca'
 font-family: 'Playball' */

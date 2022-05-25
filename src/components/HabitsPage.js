@@ -13,7 +13,7 @@ function HabitsPage() {
             <Top />
             
             
-            <div>Habits Page</div>
+            <PageContainer>Habits Page</PageContainer>
 
 
             <FooterMenu />
@@ -26,3 +26,11 @@ function HabitsPage() {
 
 
 export default HabitsPage;
+
+
+const PageContainer = styled.div`
+    margin-top: 70px;
+    margin-bottom: 70px;
+    height: calc(100vh - 140px);
+    background-color: #f2f2f2;
+`;
