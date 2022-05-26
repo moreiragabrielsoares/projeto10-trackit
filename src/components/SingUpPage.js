@@ -1,4 +1,5 @@
 import { React , useState } from 'react';
+import { Link } from "react-router-dom";
 import styled from 'styled-components';
 
 import imgLogo from "../assets/img/logo.png"
@@ -61,7 +62,11 @@ function SingUpPage() {
             <FormButton type="submit">Cadastrar</FormButton>
         </Form>
 
-        <LoginLine>Já tem uma conta? Faça login!</LoginLine>
+
+        <Link to="/">
+            <LoginLine>Já tem uma conta? Faça login!</LoginLine>
+        </Link>
+        
 
       </Container>
     );

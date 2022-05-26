@@ -1,4 +1,5 @@
 import { React , useState } from 'react';
+import { Link } from "react-router-dom";
 import styled from 'styled-components';
 
 import imgLogo from "../assets/img/logo.png"
@@ -42,7 +43,11 @@ function LoginPage() {
             <FormButton type="submit">Entrar</FormButton>
         </Form>
 
-        <SingUpLine>Não tem uma conta? Cadastre-se!</SingUpLine>
+
+        <Link to="/cadastro">
+            <SingUpLine>Não tem uma conta? Cadastre-se!</SingUpLine>
+        </Link>
+        
 
       </Container>
     );
@@ -95,6 +100,9 @@ const FormButton = styled.button`
     font-weight: 400;
     font-size: 22px;
     color: #FFFFFF;
+    :hover {
+        cursor: pointer;
+    }
 `;
 
 const SingUpLine = styled.div`
@@ -104,4 +112,7 @@ const SingUpLine = styled.div`
     text-decoration-line: underline;
     color: #52B6FF;
     margin-top: 25px;
+    :hover {
+        cursor: pointer;
+    }
 `;
