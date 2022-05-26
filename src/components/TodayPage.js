@@ -35,8 +35,8 @@ function TodayPage() {
                 <HabitContainer>
                     <InfosContainer>
                         <HabitLine>Hábito</HabitLine>
-                        <HistoryLine>Sequência atual: X dias</HistoryLine>
-                        <HistoryLine>Seu recorde: Y dias</HistoryLine>
+                        <HistoryLine>Sequência atual: <span>X dias</span></HistoryLine>
+                        <HistoryLine>Seu recorde: <span>X dias</span></HistoryLine>
                     </InfosContainer>
                     <ion-icon name="checkbox"></ion-icon>
                 </HabitContainer>
@@ -44,8 +44,8 @@ function TodayPage() {
                 <HabitContainer>
                     <InfosContainer>
                         <HabitLine>Hábito</HabitLine>
-                        <HistoryLine>Sequência atual: X dias</HistoryLine>
-                        <HistoryLine>Seu recorde: Y dias</HistoryLine>
+                        <HistoryLine>Sequência atual: <span>X dias</span></HistoryLine>
+                        <HistoryLine>Seu recorde: <span>X dias</span></HistoryLine>
                     </InfosContainer>
                     <ion-icon name="checkbox"></ion-icon>
                 </HabitContainer>
@@ -128,4 +128,9 @@ const HistoryLine = styled.p`
     font-size: 13px;
     color: #666666;
     margin-bottom: 3px;
+
+    span {
+        color: #8FC549;
+        /* color: #666666; */
+    }
 `;
