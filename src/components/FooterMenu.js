@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { Link } from "react-router-dom";
 import { CircularProgressbarWithChildren, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 
@@ -11,25 +12,34 @@ function FooterMenu() {
     
     return (
       <Container>
-        <FooterButton>Hábitos</FooterButton>
+        
+        <Link to="/habitos" style={{textDecoration: 'none'}}>
+            <FooterButton>Hábitos</FooterButton>
+        </Link>
+        
+        <Link to="/hoje">
+            <Progressbar>
+                <CircularProgressbarWithChildren 
+                    value={percentage}
+                    background
+                    backgroundPadding={6}
+                    styles={buildStyles({
+                    backgroundColor: "#52B6FF",
+                    textColor: "#fff",
+                    pathColor: "#fff",
+                    trailColor: "transparent",
+                    })}>
 
-        <Progressbar>
-            <CircularProgressbarWithChildren 
-                value={percentage}
-                background
-                backgroundPadding={6}
-                styles={buildStyles({
-                backgroundColor: "#52B6FF",
-                textColor: "#fff",
-                pathColor: "#fff",
-                trailColor: "transparent",
-                })}>
+                    <TextProgressbar>Hoje</TextProgressbar>
 
-                <TextProgressbar>Hoje</TextProgressbar>
+                </CircularProgressbarWithChildren>
+            </Progressbar>
+        </Link>
+        
+        <Link to="/historico" style={{textDecoration: 'none'}}>
+            <FooterButton>Histórico</FooterButton>
+        </Link>
 
-            </CircularProgressbarWithChildren>
-        </Progressbar>
-        <FooterButton>Histórico</FooterButton>
       </Container>
     );
 }
