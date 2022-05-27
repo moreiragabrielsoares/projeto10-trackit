@@ -167,6 +167,10 @@ const FormButton = styled.button`
     :disabled{
         opacity: 0.6;
     }
+
+    :hover {
+        cursor: pointer;
+    }
 `;
 
 const LoginLine = styled.div`
