@@ -1,6 +1,9 @@
 import { React , useState } from 'react';
-import { Link } from "react-router-dom";
+import { Link , useNavigate } from "react-router-dom";
 import styled from 'styled-components';
+import axios from 'axios';
+
+import { ThreeDots } from  'react-loader-spinner'
 
 import imgLogo from "../assets/img/logo.png"
 
@@ -13,12 +16,30 @@ function SingUpPage() {
     const [userPassword, setUserPassword] = useState("");
     const [userName, setUserName] = useState("");
     const [userPhoto, setUserPhoto] = useState("");
+
+    const [isFormDisabled, setIsFormDisabled] = useState(false);
+
+    const navigate = useNavigate();
     
     
     function register(event) {
         event.preventDefault();
-        console.log(userPassword);
+        setIsFormDisabled(true);
+        
+        const singUpObj = {
+            email: userEmail,
+            name: userName,
+            image: userPhoto,
+            password: userPassword
+        }
+
+        const request = axios.post("https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/auth/sign-up", singUpObj);
+        
+        request.then((res) => {navigate("/")});         
+        
+        request.catch((erro) => {alert(erro.response.data.message); setIsFormDisabled(false); setUserEmail(""); setUserPassword(""); setUserName(""); setUserPhoto("")});
     }
+
     
     
     return (
@@ -34,6 +55,7 @@ function SingUpPage() {
                 value={userEmail}
                 type="email"
                 required
+                disabled={isFormDisabled}
             />
             <FormInput 
                 id="userPassword" 
@@ -42,6 +64,7 @@ function SingUpPage() {
                 value={userPassword}
                 type="password"
                 required
+                disabled={isFormDisabled}
             />
             <FormInput 
                 id="userName" 
@@ -50,6 +73,7 @@ function SingUpPage() {
                 value={userName}
                 type="text"
                 required
+                disabled={isFormDisabled}
             />
             <FormInput 
                 id="userPhoto" 
@@ -58,8 +82,17 @@ function SingUpPage() {
                 value={userPhoto}
                 type="text"
                 required
+                disabled={isFormDisabled}
             />
-            <FormButton type="submit">Cadastrar</FormButton>
+
+            {isFormDisabled ? 
+                (<FormButton type="submit" disabled={isFormDisabled}>
+                    <ThreeDots color="#FFFFFF" height={50} width={50} />
+                </FormButton>) 
+                : (<FormButton type="submit" disabled={isFormDisabled}>Cadastrar</FormButton>)
+            }
+
+
         </Form>
 
 
@@ -99,6 +132,7 @@ const FormInput = styled.input`
     width: 303px;
     height: 45px;
     border: 1px solid #D5D5D5;
+    background: #FFFFFF;
     border-radius: 5px;
     margin-bottom: 7px;
     font-size: 16px;
@@ -109,6 +143,11 @@ const FormInput = styled.input`
         font-size: 20px;
         color: #DBDBDB;
     }
+
+    :disabled{
+        opacity: 0.6;
+    }
+
 `;
 
 const FormButton = styled.button`
@@ -121,6 +160,13 @@ const FormButton = styled.button`
     font-weight: 400;
     font-size: 22px;
     color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    :disabled{
+        opacity: 0.6;
+    }
 `;
 
 const LoginLine = styled.div`

@@ -1,4 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { useState } from "react";
+
+import UserContext from "./contexts/UserContext";
 
 import LoginPage from "./components/LoginPage";
 import SingUpPage from "./components/SingUpPage";
@@ -11,6 +14,7 @@ import HistoryPage from "./components/HistoryPage";
 function App() {
   return (
     <BrowserRouter>
+      <UserContext.Provider>
         <Routes>
             <Route path="/" element={<LoginPage />} />
             <Route path="/cadastro" element={<SingUpPage />} />
@@ -18,6 +22,7 @@ function App() {
             <Route path="/habitos" element={<HabitsPage />} />
             <Route path="/historico" element={<HistoryPage />} />
         </Routes>
+      </UserContext.Provider>
     </BrowserRouter>
   );
 }
