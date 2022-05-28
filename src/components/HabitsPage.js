@@ -72,8 +72,25 @@ function AddHabitContainerComponent ({setShowForm, habitObj, setHabitObj, setHab
             setIsFormDisabled(false);
         }
 
-        request.catch((err) => console.log(err.response.data));
+        request.catch(errorTreatment);
+
+        function errorTreatment(error) {
+            alert(error.response.data.message);
+            setHabitObj({
+                name:"", 
+                daysWeek: [
+                    {day: "D", n: 0, selected:false},
+                    {day: "S", n: 1, selected:false}, 
+                    {day: "T", n: 2, selected:false},
+                    {day: "Q", n: 3, selected:false},
+                    {day: "Q", n: 4, selected:false},
+                    {day: "S", n: 5, selected:false},
+                    {day: "D", n: 6, selected:false}]
+            });
+            setIsFormDisabled(false);
         }
+    
+    }
     
     
     return (
@@ -114,14 +131,42 @@ function AddHabitContainerComponent ({setShowForm, habitObj, setHabitObj, setHab
 
 
 
-function HabitContainerComponent ({name , days}) {
+function HabitContainerComponent ({name , days , habitId, setControlEffect}) {
+
+    const {token, setToken, userImg, setUserImg} = useContext(UserContext);
+
+    const config = {
+        headers: {
+            "Authorization": `Bearer ${token}`
+        }
+    }
+
+    function deletHabit (habitId) {
+
+        const response = window.confirm("Deseja realmente apagar?");
+
+        if (response) {
+            const request = axios.delete(`https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits/${habitId}`, config);
+
+            request.then(success);
+
+            function success (res) {
+                setControlEffect(prevState => prevState + 1);
+            }
+
+            request.catch((err) => console.log(err.response.data));
+        }
+
+
+    }
+
 
     return (
         <HabitContainer>
 
             <HabitTitle>{name}</HabitTitle>
             
-            <ion-icon name="trash-outline"></ion-icon>
+            <ion-icon name="trash-outline" onClick={() => deletHabit(habitId)}></ion-icon>
             
             <DaysContainer>
                 <DayBox isSelected={days.some(e => e === 0)}>D</DayBox>
@@ -156,6 +201,8 @@ function HabitsPage() {
     
     const [showForm, setShowForm] = useState(false);
 
+    const [controlEffect, setControlEffect] = useState(0);
+
     const [isFormDisabled, setIsFormDisabled] = useState(false);
 
     const [habitsList, setHabitsList] = useState([]);
@@ -183,7 +230,7 @@ function HabitsPage() {
 		const promisse = axios.get("https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits", config);
 		promisse.then(success);
         promisse.catch((erro) => {console.log(erro.response.data)}) //alert(erro.response.data.message)});
-	}, []);
+	}, [controlEffect]);
 
 
     function success (res) {
@@ -198,7 +245,7 @@ function HabitsPage() {
         if (habitsList.length === 0) {
             return <Text>Você não tem nenhum hábito cadastrado ainda. Adicione um hábito para começar a trackear!</Text>
         } else {
-            return habitsList.map(habit => <HabitContainerComponent name={habit.name} days={habit.days}/>)
+            return habitsList.map(habit => <HabitContainerComponent key={habit.id} habitId={habit.id} name={habit.name} days={habit.days} setControlEffect={setControlEffect}/>)
         }
 
     }
@@ -399,6 +446,9 @@ const HabitContainer = styled.div`
         top: 10px;
         font-size: 20px;
         color: #666666;
+        :hover{
+        cursor: pointer;
+        }
     }
 `;
 
