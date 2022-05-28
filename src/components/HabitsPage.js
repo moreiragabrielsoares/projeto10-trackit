@@ -2,6 +2,7 @@ import { React , useState, useContext , useEffect } from 'react';
 import UserContext from '../contexts/UserContext'
 import styled from 'styled-components';
 import axios from 'axios';
+import { ThreeDots } from  'react-loader-spinner'
 
 
 import Top from "./Top";
@@ -10,31 +11,102 @@ import FooterMenu from "./FooterMenu";
 
 
 
+function AddHabitContainerComponent ({setShowForm, habitObj, setHabitObj, setHabitsList, habitsList, isFormDisabled, setIsFormDisabled}) {
 
+    const {token, setToken, userImg, setUserImg} = useContext(UserContext);
+    
+    function selectDay (dayN) {
+        const newArr = habitObj.daysWeek;
+        const temp = newArr[dayN].selected;
+        newArr[dayN].selected = !temp;
+        setHabitObj({...habitObj, daysWeek: newArr});
+    }
 
-function AddHabitContainerComponent ({setShowForm}) {
+    function sendHabit () {
+        
+        if (habitObj.name === "") {
+            alert("Nome do hábito não pode ser vazio!");
+            return;
+        }
+        
+        const sendHabitObj = {name: habitObj.name, days: []};
+        for (let i = 0 ; i < 7 ; i ++) {
+            if (habitObj.daysWeek[i].selected) {
+                sendHabitObj.days.push(i);
+            }
+        }
 
+        if (sendHabitObj.days.length === 0) {
+            alert("Pelo menos 1 dia da semana deve ser selecionado!");
+            return;
+        }
 
+        setIsFormDisabled(true);
+        
+        const config = {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        }
 
+        const request = axios.post("https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits", sendHabitObj, config);
+
+        request.then(success);
+
+        function success (res) {
+            const newArr = habitsList;
+            newArr.push(res.data);
+            setHabitsList(newArr);
+            setHabitObj({
+                name:"", 
+                daysWeek: [
+                    {day: "D", n: 0, selected:false},
+                    {day: "S", n: 1, selected:false}, 
+                    {day: "T", n: 2, selected:false},
+                    {day: "Q", n: 3, selected:false},
+                    {day: "Q", n: 4, selected:false},
+                    {day: "S", n: 5, selected:false},
+                    {day: "D", n: 6, selected:false}]
+            });
+            setShowForm(false);
+            setIsFormDisabled(false);
+        }
+
+        request.catch((err) => console.log(err.response.data));
+        }
+    
+    
     return (
-        <AddHabitContainer>
-
-            <AddHabitInput placeholder='nome do hábito'></AddHabitInput>
+        <AddHabitContainer style={isFormDisabled ? {pointerEvents: "none", opacity: "0.6"} : {}}>
+            
+            <AddHabitInput
+                placeholder='nome do hábito'
+                onChange={e => setHabitObj({...habitObj, name: e.target.value})} 
+                value={habitObj.name}
+                disabled={isFormDisabled}
+            />
 
             <DaysContainer>
-                <DayBox>D</DayBox>
-                <DayBox>S</DayBox>
-                <DayBox>T</DayBox>
-                <DayBox>Q</DayBox>
-                <DayBox>Q</DayBox>
-                <DayBox>S</DayBox>
-                <DayBox>S</DayBox>
+                {habitObj.daysWeek.map(dayWeek => <DayBox 
+                    isSelected={dayWeek.selected} 
+                    onClick={() => selectDay(dayWeek.n)}
+                    >{dayWeek.day}</DayBox>)}
             </DaysContainer>
 
             <ButtonsContainer>
-                <SaveButton>Salvar</SaveButton>
+
+
+            {isFormDisabled ? 
+                (<SaveButton>
+                    <ThreeDots color="#FFFFFF" height={50} width={50} />
+                </SaveButton>) 
+                : (<SaveButton onClick={sendHabit}>Salvar</SaveButton>)
+            }
+
+
                 <CancelButton onClick={() => setShowForm(false)}>Cancelar</CancelButton>
             </ButtonsContainer>
+            
 
         </AddHabitContainer>
     )
@@ -84,7 +156,21 @@ function HabitsPage() {
     
     const [showForm, setShowForm] = useState(false);
 
+    const [isFormDisabled, setIsFormDisabled] = useState(false);
+
     const [habitsList, setHabitsList] = useState([]);
+
+    const [habitObj, setHabitObj] = useState({
+        name:"", 
+        daysWeek: [
+            {day: "D", n: 0, selected:false},
+            {day: "S", n: 1, selected:false}, 
+            {day: "T", n: 2, selected:false},
+            {day: "Q", n: 3, selected:false},
+            {day: "Q", n: 4, selected:false},
+            {day: "S", n: 5, selected:false},
+            {day: "D", n: 6, selected:false}]
+    });
     
     useEffect(() => {
 
@@ -101,20 +187,8 @@ function HabitsPage() {
 
 
     function success (res) {
-        //console.log(res.data);
-        //setHabitsList(res.data);
-        setHabitsList([
-            {
-                id: 1,
-                name: "Nome do hábito",
-                days: [1, 3, 5]
-            },
-            {
-                id: 2,
-                name: "Nome do hábito 2",
-                days: [1, 3, 4, 6]
-            }
-        ]);
+        console.log(res.data);
+        setHabitsList(res.data);
     }
 
     
@@ -135,7 +209,7 @@ function HabitsPage() {
     function checkAddHabit () {
 
         if (showForm) {
-            return <AddHabitContainerComponent setShowForm={setShowForm}/>
+            return <AddHabitContainerComponent setShowForm={setShowForm} habitObj={habitObj} setHabitObj={setHabitObj} setHabitsList={setHabitsList} habitsList={habitsList} isFormDisabled={isFormDisabled} setIsFormDisabled={setIsFormDisabled}/>
         }
     }
 
@@ -229,6 +303,7 @@ const AddHabitContainer = styled.div`
     flex-direction: column;
     padding: 18px 16px 15px 19px;
     margin-bottom: 25px;
+    opacity: 0.8;
 `;
 
 const AddHabitInput = styled.input`
@@ -266,6 +341,9 @@ const DayBox = styled.div`
     font-size: 20px;
     color: ${props => props.isSelected ? "#FFFFFF" : "#DBDBDB"};
     margin-right: 4px;
+    :hover{
+        cursor: pointer;
+    }
 `;
 
 

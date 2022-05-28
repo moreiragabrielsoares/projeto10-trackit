@@ -62,6 +62,7 @@ const Container = styled.div`
     flex-direction: row;
     align-items: center;
     justify-content: space-around;
+    z-index: 1;
 `;
 
 const FooterButton = styled.div`

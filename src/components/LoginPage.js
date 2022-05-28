@@ -30,7 +30,6 @@ function LoginPage() {
             password: userPassword
         }
 
-
         const request = axios.post("https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/auth/login", loginObj);
         
         request.then(loginSuccess);         
