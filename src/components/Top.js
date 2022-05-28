@@ -1,16 +1,21 @@
-import React from 'react';
+import { React , useContext } from 'react';
+import UserContext from '../contexts/UserContext';
 import styled from 'styled-components';
 
 
 
 
 function Top() {
-    return (
-      <Container>
-        <Logo>TrackIt</Logo>
-        <UserImg src='https://viciados.net/wp-content/uploads/2020/02/Naruto-Cl%C3%A1ssico-e-Naruto-Shippuden-fillers.jpg'/>
-      </Container>
-    );
+
+  const {token, setToken, userImg, setUserImg} = useContext(UserContext);
+
+  console.log(userImg);
+  return (
+    <Container>
+      <Logo>TrackIt</Logo>
+      <UserImg src={userImg}/>
+    </Container>
+  );
 }
   
 

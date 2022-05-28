@@ -1,4 +1,5 @@
-import { React , useState } from 'react';
+import { React , useState, useContext } from 'react';
+import UserContext from '../contexts/UserContext'
 import { Link , useNavigate } from "react-router-dom";
 import styled from 'styled-components';
 import axios from 'axios';
@@ -17,6 +18,8 @@ function LoginPage() {
     const [isFormDisabled, setIsFormDisabled] = useState(false);
     
     const navigate = useNavigate();
+
+    const {token, setToken, userImg, setUserImg} = useContext(UserContext);
     
     function login(event) {
         event.preventDefault();
@@ -30,12 +33,20 @@ function LoginPage() {
 
         const request = axios.post("https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/auth/login", loginObj);
         
-        request.then((res) => {console.log(res.data); navigate("/hoje")});         
+        request.then(loginSuccess);         
         
         request.catch((erro) => {alert(erro.response.data.message); setIsFormDisabled(false)});
 
     }
     
+
+    function loginSuccess (res) {
+        console.log(res.data);
+        setToken(res.data.token);
+        setUserImg(res.data.image);
+        navigate("/hoje");
+    }
+
     
     return (
       <Container>

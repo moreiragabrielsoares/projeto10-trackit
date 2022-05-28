@@ -12,9 +12,16 @@ import HistoryPage from "./components/HistoryPage";
 
 
 function App() {
+  
+  const [token, setToken] = useState("");
+  const [userImg, setUserImg] = useState("");
+  
+  
+  
+  
   return (
     <BrowserRouter>
-      <UserContext.Provider>
+      <UserContext.Provider value = {{token, setToken, userImg, setUserImg}}>
         <Routes>
             <Route path="/" element={<LoginPage />} />
             <Route path="/cadastro" element={<SingUpPage />} />

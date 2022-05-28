@@ -1,4 +1,5 @@
-import React from 'react';
+import { React , useContext } from 'react';
+import UserContext from '../contexts/UserContext';
 import styled from 'styled-components';
 import * as dayjs from 'dayjs'
 import 'dayjs/locale/pt-br';
@@ -11,7 +12,7 @@ var updateLocale = require('dayjs/plugin/updateLocale');
 dayjs.extend(updateLocale);
 dayjs.updateLocale('pt-br', {
     weekdays : ["Domingo" , "Segunda" , "Terça", "Quarta", "Quinta", "Sexta", "Sábado"] 
-  });
+});
 
 
 
@@ -20,6 +21,11 @@ function TodayPage() {
 
     const weekday = dayjs().locale("pt-br").format("dddd");
     const day = dayjs().locale("pt-br").format("DD/MM");
+
+
+    const {token, setToken, userImg, setUserImg} = useContext(UserContext);
+
+
 
     return (
         <>

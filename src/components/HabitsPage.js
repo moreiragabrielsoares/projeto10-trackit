@@ -1,5 +1,7 @@
-import React from 'react';
+import { React , useState, useContext , useEffect } from 'react';
+import UserContext from '../contexts/UserContext'
 import styled from 'styled-components';
+import axios from 'axios';
 
 
 import Top from "./Top";
@@ -7,7 +9,137 @@ import FooterMenu from "./FooterMenu";
 
 
 
+
+
+
+function AddHabitContainerComponent ({setShowForm}) {
+
+
+
+    return (
+        <AddHabitContainer>
+
+            <AddHabitInput placeholder='nome do hábito'></AddHabitInput>
+
+            <DaysContainer>
+                <DayBox>D</DayBox>
+                <DayBox>S</DayBox>
+                <DayBox>T</DayBox>
+                <DayBox>Q</DayBox>
+                <DayBox>Q</DayBox>
+                <DayBox>S</DayBox>
+                <DayBox>S</DayBox>
+            </DaysContainer>
+
+            <ButtonsContainer>
+                <SaveButton>Salvar</SaveButton>
+                <CancelButton onClick={() => setShowForm(false)}>Cancelar</CancelButton>
+            </ButtonsContainer>
+
+        </AddHabitContainer>
+    )
+}
+
+
+
+function HabitContainerComponent ({name , days}) {
+
+    return (
+        <HabitContainer>
+
+            <HabitTitle>{name}</HabitTitle>
+            
+            <ion-icon name="trash-outline"></ion-icon>
+            
+            <DaysContainer>
+                <DayBox isSelected={days.some(e => e === 0)}>D</DayBox>
+                <DayBox isSelected={days.some(e => e === 1)}>S</DayBox>
+                <DayBox isSelected={days.some(e => e === 2)}>T</DayBox>
+                <DayBox isSelected={days.some(e => e === 3)}>Q</DayBox>
+                <DayBox isSelected={days.some(e => e === 4)}>Q</DayBox>
+                <DayBox isSelected={days.some(e => e === 5)}>S</DayBox>
+                <DayBox isSelected={days.some(e => e === 6)}>S</DayBox>
+            </DaysContainer>
+
+        </HabitContainer>
+    )
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
 function HabitsPage() {
+    
+    const {token, setToken, userImg, setUserImg} = useContext(UserContext);
+    
+    const [showForm, setShowForm] = useState(false);
+
+    const [habitsList, setHabitsList] = useState([]);
+    
+    useEffect(() => {
+
+        const config = {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        }
+
+		const promisse = axios.get("https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits", config);
+		promisse.then(success);
+        promisse.catch((erro) => {console.log(erro.response.data)}) //alert(erro.response.data.message)});
+	}, []);
+
+
+    function success (res) {
+        //console.log(res.data);
+        //setHabitsList(res.data);
+        setHabitsList([
+            {
+                id: 1,
+                name: "Nome do hábito",
+                days: [1, 3, 5]
+            },
+            {
+                id: 2,
+                name: "Nome do hábito 2",
+                days: [1, 3, 4, 6]
+            }
+        ]);
+    }
+
+    
+    const verifyListHabits = checkListHabits ();
+    function checkListHabits () {
+
+        if (habitsList.length === 0) {
+            return <Text>Você não tem nenhum hábito cadastrado ainda. Adicione um hábito para começar a trackear!</Text>
+        } else {
+            return habitsList.map(habit => <HabitContainerComponent name={habit.name} days={habit.days}/>)
+        }
+
+    }
+
+
+
+    const verifyAddHabit = checkAddHabit ();
+    function checkAddHabit () {
+
+        if (showForm) {
+            return <AddHabitContainerComponent setShowForm={setShowForm}/>
+        }
+    }
+
+
     return (
         <>
             <Top />
@@ -17,71 +149,12 @@ function HabitsPage() {
 
                 <TitleContainer>
                     <Title>Meus hábitos</Title>
-                    <AddButton>+</AddButton>
+                    <AddButton onClick={() => setShowForm(true)}>+</AddButton>
                 </TitleContainer>
+                
+                {verifyAddHabit}
 
-
-                <AddHabitContainer>
-
-                    <AddHabitInput placeholder='nome do hábito'></AddHabitInput>
-
-                    <DaysContainer>
-                        <DayBox>D</DayBox>
-                        <DayBox>S</DayBox>
-                        <DayBox>T</DayBox>
-                        <DayBox>Q</DayBox>
-                        <DayBox>Q</DayBox>
-                        <DayBox>S</DayBox>
-                        <DayBox>S</DayBox>
-                    </DaysContainer>
-
-                    <ButtonsContainer>
-                        <SaveButton>Salvar</SaveButton>
-                        <CancelButton>Cancelar</CancelButton>
-                    </ButtonsContainer>
-
-                </AddHabitContainer>
-
-
-
-                <HabitContainer>
-
-                    <HabitTitle>Ler 1 capítulo de livro</HabitTitle>
-                    
-                    <ion-icon name="trash-outline"></ion-icon>
-                    
-                    <DaysContainer>
-                        <DayBox>D</DayBox>
-                        <DayBox>S</DayBox>
-                        <DayBox>T</DayBox>
-                        <DayBox>Q</DayBox>
-                        <DayBox>Q</DayBox>
-                        <DayBox>S</DayBox>
-                        <DayBox>S</DayBox>
-                    </DaysContainer>
-
-                </HabitContainer>
-
-                <HabitContainer>
-
-                    <HabitTitle>Ler 1 capítulo de livro</HabitTitle>
-                    
-                    <ion-icon name="trash-outline"></ion-icon>
-                    
-                    <DaysContainer>
-                        <DayBox>D</DayBox>
-                        <DayBox>S</DayBox>
-                        <DayBox>T</DayBox>
-                        <DayBox>Q</DayBox>
-                        <DayBox>Q</DayBox>
-                        <DayBox>S</DayBox>
-                        <DayBox>S</DayBox>
-                    </DaysContainer>
-
-                </HabitContainer>
-
-
-                <Text>Você não tem nenhum hábito cadastrado ainda. Adicione um hábito para começar a trackear!</Text>
+                {verifyListHabits}
 
             </PageContainer>
 
@@ -135,6 +208,9 @@ const AddButton = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
+    :hover{
+        cursor: pointer;
+    }
 `;
 
 const Text = styled.p`
@@ -179,7 +255,7 @@ const DaysContainer = styled.div`
 const DayBox = styled.div`
     width: 30px;
     height: 30px;
-    background-color: #FFFFFF;
+    background-color: ${props => props.isSelected ? "#CFCFCF" : "#FFFFFF"};
     border: 1px solid #D5D5D5;
     border-radius: 5px;
     display: flex;
@@ -188,7 +264,7 @@ const DayBox = styled.div`
     font-family: 'Lexend Deca';
     font-weight: 400;
     font-size: 20px;
-    color: #DBDBDB;
+    color: ${props => props.isSelected ? "#FFFFFF" : "#DBDBDB"};
     margin-right: 4px;
 `;
 
@@ -212,6 +288,9 @@ const SaveButton = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
+    :hover{
+        cursor: pointer;
+    }
 `;
 
 const CancelButton = styled.p`
@@ -220,6 +299,9 @@ const CancelButton = styled.p`
     font-size: 16px;
     color: #52B6FF;
     margin-right: 20px;
+    :hover{
+        cursor: pointer;
+    }
 `;
 
 const HabitContainer = styled.div`
