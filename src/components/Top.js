@@ -9,7 +9,6 @@ function Top() {
 
   const {token, setToken, userImg, setUserImg} = useContext(UserContext);
 
-  console.log(userImg);
   return (
     <Container>
       <Logo>TrackIt</Logo>

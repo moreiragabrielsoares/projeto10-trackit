@@ -85,7 +85,7 @@ function AddHabitContainerComponent ({setShowForm, habitObj, setHabitObj, setHab
                     {day: "Q", n: 3, selected:false},
                     {day: "Q", n: 4, selected:false},
                     {day: "S", n: 5, selected:false},
-                    {day: "D", n: 6, selected:false}]
+                    {day: "S", n: 6, selected:false}]
             });
             setIsFormDisabled(false);
         }
@@ -107,6 +107,7 @@ function AddHabitContainerComponent ({setShowForm, habitObj, setHabitObj, setHab
                 {habitObj.daysWeek.map(dayWeek => <DayBox 
                     isSelected={dayWeek.selected} 
                     onClick={() => selectDay(dayWeek.n)}
+                    key={dayWeek.n}
                     >{dayWeek.day}</DayBox>)}
             </DaysContainer>
 
@@ -216,7 +217,7 @@ function HabitsPage() {
             {day: "Q", n: 3, selected:false},
             {day: "Q", n: 4, selected:false},
             {day: "S", n: 5, selected:false},
-            {day: "D", n: 6, selected:false}]
+            {day: "S", n: 6, selected:false}]
     });
     
     useEffect(() => {
@@ -229,12 +230,12 @@ function HabitsPage() {
 
 		const promisse = axios.get("https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits", config);
 		promisse.then(success);
-        promisse.catch((erro) => {console.log(erro.response.data)}) //alert(erro.response.data.message)});
+        promisse.catch((erro) => {alert(erro.response.data.message)});
 	}, [controlEffect]);
 
 
     function success (res) {
-        console.log(res.data);
+        //console.log(res.data);
         setHabitsList(res.data);
     }
 

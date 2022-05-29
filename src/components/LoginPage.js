@@ -40,7 +40,6 @@ function LoginPage() {
     
 
     function loginSuccess (res) {
-        console.log(res.data);
         setToken(res.data.token);
         setUserImg(res.data.image);
         navigate("/hoje");

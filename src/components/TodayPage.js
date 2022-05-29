@@ -1,10 +1,11 @@
-import { React , useContext } from 'react';
+import { React , useContext , useEffect , useState} from 'react';
 import UserContext from '../contexts/UserContext';
 import styled from 'styled-components';
 import * as dayjs from 'dayjs'
 import 'dayjs/locale/pt-br';
 import Top from "./Top";
 import FooterMenu from "./FooterMenu";
+import axios from 'axios';
 
 var customParseFormat = require('dayjs/plugin/customParseFormat');
 dayjs.extend(customParseFormat);
@@ -17,6 +18,48 @@ dayjs.updateLocale('pt-br', {
 
 
 
+
+function HabitContainerComponent ({habitId , name , isDone , currentSequence , highestSequence}) {
+    
+    const {token, setToken, userImg, setUserImg} = useContext(UserContext);
+
+    const config = {
+        headers: {
+            "Authorization": `Bearer ${token}`
+        }
+    }
+    
+    function checkDoneHabit (habitId) {
+        console.log(habitId);
+
+        const request = axios.post(`https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits/${habitId}/check`, null, config);
+
+        request.then(success);
+
+        function success (res) {
+            console.log(res.data);
+        }
+
+        request.catch((err) => console.log(err.response.data));
+
+
+    }
+    
+    
+    return(
+        <HabitContainer isDone={isDone}>
+            <InfosContainer>
+                <HabitLine>{name}</HabitLine>
+                <HistoryLine>Sequência atual: <span isDone={isDone}>{`${currentSequence} dias`}</span></HistoryLine>
+                <HistoryLine>Seu recorde: <span isDone={false}>{`${highestSequence} dias`}</span></HistoryLine>
+            </InfosContainer>
+            <ion-icon name="checkbox" isDone={isDone} onClick={() => checkDoneHabit(habitId)}></ion-icon>
+        </HabitContainer>
+    )
+}
+
+
+
 function TodayPage() {
 
     const weekday = dayjs().locale("pt-br").format("dddd");
@@ -25,6 +68,41 @@ function TodayPage() {
 
     const {token, setToken, userImg, setUserImg} = useContext(UserContext);
 
+    const [habitsList, setHabitsList] = useState([]);
+
+
+
+    useEffect(() => {
+
+        const config = {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        }
+
+		const promisse = axios.get("https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits/today", config);
+		promisse.then(success);
+        promisse.catch((erro) => {console.log(erro.response.data)}) //alert(erro.response.data.message)});
+	}, []);
+
+
+    function success (res) {
+        console.log(res.data);
+        setHabitsList(res.data);
+    }
+
+
+
+    const verifyListHabits = checkListHabits ();
+    function checkListHabits () {
+
+        if (habitsList.length === 0) {
+            return <Text>Você não tem nenhum hábito para o dia de hoje! </Text>
+        } else {
+            return habitsList.map(habit => <HabitContainerComponent key={habit.id} habitId={habit.id} name={habit.name} isDone={habit.done} currentSequence={habit.currentSequence} highestSequence={habit.highestSequence}/>)
+        }
+
+    }
 
 
     return (
@@ -38,23 +116,7 @@ function TodayPage() {
 
                 <ResumeLine>Nenhum hábito concluído ainda</ResumeLine>
 
-                <HabitContainer>
-                    <InfosContainer>
-                        <HabitLine>Hábito</HabitLine>
-                        <HistoryLine>Sequência atual: <span>X dias</span></HistoryLine>
-                        <HistoryLine>Seu recorde: <span>X dias</span></HistoryLine>
-                    </InfosContainer>
-                    <ion-icon name="checkbox"></ion-icon>
-                </HabitContainer>
-
-                <HabitContainer>
-                    <InfosContainer>
-                        <HabitLine>Hábito</HabitLine>
-                        <HistoryLine>Sequência atual: <span>X dias</span></HistoryLine>
-                        <HistoryLine>Seu recorde: <span>X dias</span></HistoryLine>
-                    </InfosContainer>
-                    <ion-icon name="checkbox"></ion-icon>
-                </HabitContainer>
+                {verifyListHabits}
 
             </PageContainer>
 
@@ -112,8 +174,11 @@ const HabitContainer = styled.div`
 
     ion-icon {
         font-size: 69px;
-        /* color: #8FC549; */
-        color: #EBEBEB;
+        /* color: #8FC549; #EBEBEB;*/
+        color: ${props => props.isDone ? "#8FC549" : "#EBEBEB"};
+        :hover{
+            cursor: pointer;
+        }
     }
 `;
 
@@ -136,7 +201,15 @@ const HistoryLine = styled.p`
     margin-bottom: 3px;
 
     span {
-        color: #8FC549;
-        /* color: #666666; */
+        color: ${props => props.isDone ? "#8FC549" : "#666666"};
+        /* color: #666666; #8FC549*/
     }
+`;
+
+
+const Text = styled.p`
+    font-family: 'Lexend Deca';
+    font-weight: 400;
+    font-size: 18px;
+    color: #666666;
 `;
