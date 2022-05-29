@@ -1,5 +1,6 @@
-import React from 'react';
+import { React , useContext } from 'react';
 import styled from 'styled-components';
+import UserContext from '../contexts/UserContext';
 import { Link } from "react-router-dom";
 import { CircularProgressbarWithChildren, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
@@ -8,7 +9,8 @@ import 'react-circular-progressbar/dist/styles.css';
 
 function FooterMenu() {
     
-    const percentage = 40;
+    const {token, setToken, userImg, setUserImg, percentageProgress, setPercentageProgress} = useContext(UserContext);
+
     
     return (
       <Container>
@@ -20,7 +22,7 @@ function FooterMenu() {
         <Link to="/hoje">
             <Progressbar>
                 <CircularProgressbarWithChildren 
-                    value={percentage}
+                    value={percentageProgress}
                     background
                     backgroundPadding={6}
                     styles={buildStyles({

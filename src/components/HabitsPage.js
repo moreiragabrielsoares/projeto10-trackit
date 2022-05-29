@@ -134,13 +134,16 @@ function AddHabitContainerComponent ({setShowForm, habitObj, setHabitObj, setHab
 
 function HabitContainerComponent ({name , days , habitId, setControlEffect}) {
 
-    const {token, setToken, userImg, setUserImg} = useContext(UserContext);
+    const {token, setToken, userImg, setUserImg, percentageProgress, setPercentageProgress} = useContext(UserContext);
 
     const config = {
         headers: {
             "Authorization": `Bearer ${token}`
         }
     }
+
+
+    const [control, setControl] = useState(0);
 
     function deletHabit (habitId) {
 
@@ -153,13 +156,46 @@ function HabitContainerComponent ({name , days , habitId, setControlEffect}) {
 
             function success (res) {
                 setControlEffect(prevState => prevState + 1);
+                setControl(prevState => prevState + 1)
             }
 
             request.catch((err) => console.log(err.response.data));
         }
-
-
     }
+
+
+    useEffect(() => {
+
+        const config = {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        }
+
+		const promisse = axios.get("https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits/today", config);
+		promisse.then(success);
+        function success (res) {
+            const habitsList = res.data;
+            
+            let nDone = 0;
+            let nTotal = 0;
+            for (let i = 0 ; i < habitsList.length ; i++) {
+                nTotal++;
+                if (habitsList[i].done) {
+                    nDone++;
+                }
+            }
+    
+            if (nTotal === 0) {
+                return;
+            }
+            
+            const result = Math.round(nDone/nTotal*100);
+            setPercentageProgress(result);
+        }
+        
+        promisse.catch((erro) => {alert(erro.response.data.message)});
+	}, [control]);
 
 
     return (
@@ -186,13 +222,6 @@ function HabitContainerComponent ({name , days , habitId, setControlEffect}) {
 
 
 }
-
-
-
-
-
-
-
 
 
 
@@ -238,7 +267,6 @@ function HabitsPage() {
         //console.log(res.data);
         setHabitsList(res.data);
     }
-
     
     const verifyListHabits = checkListHabits ();
     function checkListHabits () {
@@ -250,8 +278,6 @@ function HabitsPage() {
         }
 
     }
-
-
 
     const verifyAddHabit = checkAddHabit ();
     function checkAddHabit () {

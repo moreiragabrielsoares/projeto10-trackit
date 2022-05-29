@@ -15,13 +15,14 @@ function App() {
   
   const [token, setToken] = useState("");
   const [userImg, setUserImg] = useState("");
+  const [percentageProgress, setPercentageProgress] = useState(0);
   
   
   
   
   return (
     <BrowserRouter>
-      <UserContext.Provider value = {{token, setToken, userImg, setUserImg}}>
+      <UserContext.Provider value = {{token, setToken, userImg, setUserImg, percentageProgress, setPercentageProgress}}>
         <Routes>
             <Route path="/" element={<LoginPage />} />
             <Route path="/cadastro" element={<SingUpPage />} />

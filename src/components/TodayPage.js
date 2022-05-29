@@ -19,7 +19,7 @@ dayjs.updateLocale('pt-br', {
 
 
 
-function HabitContainerComponent ({habitId , name , isDone , currentSequence , highestSequence}) {
+function HabitContainerComponent ({habitId , name , isDone , currentSequence , highestSequence , setControlEffect}) {
     
     const {token, setToken, userImg, setUserImg} = useContext(UserContext);
 
@@ -29,19 +29,30 @@ function HabitContainerComponent ({habitId , name , isDone , currentSequence , h
         }
     }
     
-    function checkDoneHabit (habitId) {
+    function checkDoneHabit (habitId, isDone) {
         console.log(habitId);
 
-        const request = axios.post(`https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits/${habitId}/check`, null, config);
+        
+        if (isDone) {
+            const request = axios.post(`https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits/${habitId}/uncheck`, null, config);
 
-        request.then(success);
+            request.then(success);
+
+            request.catch((err) => console.log(err.response.data));
+
+        } else {
+            const request = axios.post(`https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits/${habitId}/check`, null, config);
+
+            request.then(success);
+
+            request.catch((err) => console.log(err.response.data));
+        }
+
 
         function success (res) {
             console.log(res.data);
+            setControlEffect(prevState => prevState + 1)
         }
-
-        request.catch((err) => console.log(err.response.data));
-
 
     }
     
@@ -50,10 +61,10 @@ function HabitContainerComponent ({habitId , name , isDone , currentSequence , h
         <HabitContainer isDone={isDone}>
             <InfosContainer>
                 <HabitLine>{name}</HabitLine>
-                <HistoryLine>Sequência atual: <span isDone={isDone}>{`${currentSequence} dias`}</span></HistoryLine>
-                <HistoryLine>Seu recorde: <span isDone={false}>{`${highestSequence} dias`}</span></HistoryLine>
+                <HistoryLine isDone={isDone}>Sequência atual: <span>{`${currentSequence} dias`}</span></HistoryLine>
+                <HistoryLine isDone={false}>Seu recorde: <span>{`${highestSequence} dias`}</span></HistoryLine>
             </InfosContainer>
-            <ion-icon name="checkbox" isDone={isDone} onClick={() => checkDoneHabit(habitId)}></ion-icon>
+            <ion-icon name="checkbox" isDone={isDone} onClick={() => checkDoneHabit(habitId, isDone)}></ion-icon>
         </HabitContainer>
     )
 }
@@ -66,7 +77,8 @@ function TodayPage() {
     const day = dayjs().locale("pt-br").format("DD/MM");
 
 
-    const {token, setToken, userImg, setUserImg} = useContext(UserContext);
+    const {token, setToken, userImg, setUserImg, percentageProgress, setPercentageProgress} = useContext(UserContext);
+    const [controlEffect, setControlEffect] = useState(0);
 
     const [habitsList, setHabitsList] = useState([]);
 
@@ -82,26 +94,51 @@ function TodayPage() {
 
 		const promisse = axios.get("https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits/today", config);
 		promisse.then(success);
-        promisse.catch((erro) => {console.log(erro.response.data)}) //alert(erro.response.data.message)});
-	}, []);
+        promisse.catch((erro) => {alert(erro.response.data.message)});
+	}, [controlEffect]);
 
 
     function success (res) {
-        console.log(res.data);
         setHabitsList(res.data);
     }
 
 
 
     const verifyListHabits = checkListHabits ();
-    function checkListHabits () {
+    function checkListHabits() {
 
         if (habitsList.length === 0) {
             return <Text>Você não tem nenhum hábito para o dia de hoje! </Text>
         } else {
-            return habitsList.map(habit => <HabitContainerComponent key={habit.id} habitId={habit.id} name={habit.name} isDone={habit.done} currentSequence={habit.currentSequence} highestSequence={habit.highestSequence}/>)
+            return habitsList.map(habit => <HabitContainerComponent key={habit.id} habitId={habit.id} name={habit.name} isDone={habit.done} currentSequence={habit.currentSequence} highestSequence={habit.highestSequence} setControlEffect={setControlEffect}/>)
         }
 
+    }
+
+
+    const verifyResume = checkProgress();
+    function checkProgress() {
+        let nDone = 0;
+        let nTotal = 0;
+        for (let i = 0 ; i < habitsList.length ; i++) {
+            nTotal++;
+            if (habitsList[i].done) {
+                nDone++;
+            }
+        }
+
+        if (nTotal === 0) {
+            return <ResumeLine>Nenhum hábito concluído ainda</ResumeLine>
+        }
+        
+        const result = Math.round(nDone/nTotal*100);
+        setPercentageProgress(result);
+
+        if (result === 0) {
+            return <ResumeLine>Nenhum hábito concluído ainda</ResumeLine>
+        }
+
+        return <ResumeLine>{`${percentageProgress}% dos hábitos concluídos`}</ResumeLine>
     }
 
 
@@ -114,7 +151,7 @@ function TodayPage() {
 
                 <DayLine>{`${weekday}, ${day}`}</DayLine>
 
-                <ResumeLine>Nenhum hábito concluído ainda</ResumeLine>
+                {verifyResume}
 
                 {verifyListHabits}
 
