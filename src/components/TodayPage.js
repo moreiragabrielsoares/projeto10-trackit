@@ -62,7 +62,7 @@ function HabitContainerComponent ({habitId , name , isDone , currentSequence , h
             <InfosContainer>
                 <HabitLine>{name}</HabitLine>
                 <HistoryLine isDone={isDone}>Sequência atual: <span>{`${currentSequence} dias`}</span></HistoryLine>
-                <HistoryLine isDone={false}>Seu recorde: <span>{`${highestSequence} dias`}</span></HistoryLine>
+                <HistoryLine isDone={(currentSequence === highestSequence) && (highestSequence > 0)}>Seu recorde: <span>{`${highestSequence} dias`}</span></HistoryLine>
             </InfosContainer>
             <ion-icon name="checkbox" isDone={isDone} onClick={() => checkDoneHabit(habitId, isDone)}></ion-icon>
         </HabitContainer>
