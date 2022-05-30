@@ -376,7 +376,7 @@ const AddHabitContainer = styled.div`
     display: flex;
     flex-direction: column;
     padding: 18px 16px 15px 19px;
-    margin-bottom: 25px;
+    margin: 0 auto 25px auto;
     opacity: 0.8;
 `;
 
@@ -464,7 +464,7 @@ const HabitContainer = styled.div`
     display: flex;
     flex-direction: column;
     padding: 16px 11px 5px 15px;
-    margin-bottom: 10px;
+    margin: 0 auto 10px auto;
     position: relative;
 
     ion-icon{
