@@ -6,6 +6,7 @@ import 'dayjs/locale/pt-br';
 import Top from "./Top";
 import FooterMenu from "./FooterMenu";
 import axios from 'axios';
+import { ThreeDots } from  'react-loader-spinner'
 
 var customParseFormat = require('dayjs/plugin/customParseFormat');
 dayjs.extend(customParseFormat);
@@ -30,8 +31,6 @@ function HabitContainerComponent ({habitId , name , isDone , currentSequence , h
     }
     
     function checkDoneHabit (habitId, isDone) {
-        console.log(habitId);
-
         
         if (isDone) {
             const request = axios.post(`https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits/${habitId}/uncheck`, null, config);
@@ -50,7 +49,6 @@ function HabitContainerComponent ({habitId , name , isDone , currentSequence , h
 
 
         function success (res) {
-            console.log(res.data);
             setControlEffect(prevState => prevState + 1)
         }
 
@@ -79,10 +77,11 @@ function TodayPage() {
 
     const {token, setToken, userImg, setUserImg, percentageProgress, setPercentageProgress} = useContext(UserContext);
     const [controlEffect, setControlEffect] = useState(0);
+    const [controlFirstLoading, setControlFirstLoading] = useState(0);
 
     const [habitsList, setHabitsList] = useState([]);
 
-
+    
 
     useEffect(() => {
 
@@ -100,6 +99,7 @@ function TodayPage() {
 
     function success (res) {
         setHabitsList(res.data);
+        setControlFirstLoading(prevState => prevState + 1);
     }
 
 
@@ -142,21 +142,34 @@ function TodayPage() {
     }
 
 
+    const verifyFirstLoading = checkFirstLoading();
+    function checkFirstLoading() {
+        if (controlFirstLoading === 0) {
+            return <LoadingContainer>
+
+                        <ThreeDots color="#126BA5" height={100} width={100} />
+
+                    </LoadingContainer>
+        } else {
+            return <PageContainer>
+
+                        <DayLine>{`${weekday}, ${day}`}</DayLine>
+
+                        {verifyResume}
+
+                        {verifyListHabits}
+
+                    </PageContainer>
+        }
+    }
+
+
+
     return (
         <>
             <Top />
             
-            
-            <PageContainer>
-
-                <DayLine>{`${weekday}, ${day}`}</DayLine>
-
-                {verifyResume}
-
-                {verifyListHabits}
-
-            </PageContainer>
-
+            {verifyFirstLoading}
 
             <FooterMenu />
         </>
@@ -179,6 +192,18 @@ const PageContainer = styled.div`
     flex-direction: column;
 `;
 
+const LoadingContainer = styled.div`
+    margin-top: 70px;
+    padding: 10px 18px 30px 18px;
+    margin-bottom: 70px;
+    min-height: calc(100vh - 140px);
+    background-color: #f2f2f2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+`;
+
 const DayLine = styled.p`
     font-family: 'Lexend Deca';
     font-weight: 400;
@@ -191,7 +216,6 @@ const ResumeLine = styled.p`
     font-family: 'Lexend Deca';
     font-weight: 400;
     font-size: 18px;
-    /* color: #BABABA; */
     color: #8FC549;
     margin-top: 5px;
     margin-bottom: 28px;
@@ -211,7 +235,6 @@ const HabitContainer = styled.div`
 
     ion-icon {
         font-size: 69px;
-        /* color: #8FC549; #EBEBEB;*/
         color: ${props => props.isDone ? "#8FC549" : "#EBEBEB"};
         :hover{
             cursor: pointer;
@@ -239,7 +262,6 @@ const HistoryLine = styled.p`
 
     span {
         color: ${props => props.isDone ? "#8FC549" : "#666666"};
-        /* color: #666666; #8FC549*/
     }
 `;
 

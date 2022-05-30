@@ -233,6 +233,8 @@ function HabitsPage() {
 
     const [controlEffect, setControlEffect] = useState(0);
 
+    const [controlFirstLoading, setControlFirstLoading] = useState(0);
+
     const [isFormDisabled, setIsFormDisabled] = useState(false);
 
     const [habitsList, setHabitsList] = useState([]);
@@ -264,8 +266,8 @@ function HabitsPage() {
 
 
     function success (res) {
-        //console.log(res.data);
         setHabitsList(res.data);
+        setControlFirstLoading(prevState => prevState + 1);
     }
     
     const verifyListHabits = checkListHabits ();
@@ -288,24 +290,36 @@ function HabitsPage() {
     }
 
 
+    const verifyFirstLoading = checkFirstLoading();
+    function checkFirstLoading() {
+        if (controlFirstLoading === 0) {
+            return <LoadingContainer>
+
+                        <ThreeDots color="#126BA5" height={100} width={100} />
+
+                    </LoadingContainer>
+        } else {
+            return <PageContainer>
+
+                        <TitleContainer>
+                            <Title>Meus hábitos</Title>
+                            <AddButton onClick={() => setShowForm(true)}>+</AddButton>
+                        </TitleContainer>
+                        
+                        {verifyAddHabit}
+
+                        {verifyListHabits}
+
+                    </PageContainer>
+        }
+    }
+
+
     return (
         <>
             <Top />
             
-            
-            <PageContainer>
-
-                <TitleContainer>
-                    <Title>Meus hábitos</Title>
-                    <AddButton onClick={() => setShowForm(true)}>+</AddButton>
-                </TitleContainer>
-                
-                {verifyAddHabit}
-
-                {verifyListHabits}
-
-            </PageContainer>
-
+            {verifyFirstLoading}
 
             <FooterMenu />
         </>
@@ -327,6 +341,18 @@ const PageContainer = styled.div`
     background-color: #f2f2f2;
     display: flex;
     flex-direction: column;
+`;
+
+const LoadingContainer = styled.div`
+    margin-top: 70px;
+    padding: 10px 18px 30px 18px;
+    margin-bottom: 70px;
+    min-height: calc(100vh - 140px);
+    background-color: #f2f2f2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 `;
 
 const TitleContainer = styled.div`
